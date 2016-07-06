@@ -16,6 +16,7 @@ script:
 - sudo pip install -r asciidoctor-htmlbook/gitberg-machine/requirements.txt
 - epubmaker --title "Anne of the Island" --author "Montgomery, L. M. (Lucy Maud)"
   51-h/51-h.htm
+- ls *
 - mv "Anne of the Island.epub" book.epub
 - ebook-convert book.epub book.mobi
 - xvfb-run ebook-convert book.epub book.pdf
