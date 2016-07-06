@@ -1,0 +1,60 @@
+sudo: required
+dist: trusty
+language: ruby
+before_install:
+- gem install asciidoctor -v 1.5.2
+- gem install tilt
+- sudo pip install git+https://github.com/rdhyee/gitberg.git
+- sudo pip install pillow
+- sudo pip install cssutils
+- sudo pip install docutils
+- sudo pip install roman
+- sudo pip install git+git://github.com/rdhyee/pg-epubmaker.git
+script:
+- VERSION=`ruby -e "require 'yaml'; meta = YAML.load_file('metadata.yaml'); puts meta['_version'];"`
+- git clone https://github.com/gitenberg-dev/asciidoctor-htmlbook.git
+- sudo pip install -r asciidoctor-htmlbook/gitberg-machine/requirements.txt
+- epubmaker --title "Anne of the Island" --author "Montgomery, L. M. (Lucy Maud)"
+  51-h/51-h.htm
+- mv "Anne of the Island.epub" book.epub
+- ebook-convert book.epub book.mobi
+- xvfb-run ebook-convert book.epub book.pdf
+branches:
+  only:
+  - master
+notifications:
+  webhooks:
+    urls:
+    - https://unglue.it/api/travisci/webhook
+    on_success: always
+    on_failure: never
+    on_start: never
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: FVygrz9Uvi23Ftw0EfWuzP735nEQ70n2lDvykdVLxkffrUZZXcjoD6FXmG17mbDl+0svsgEo2/AUZf2HM7KhN2l5O6O0v3SSg/ramSpsMfErON59ogdge9j8mZCckgwPeQh6S/C+j64lxu50YJyaKKVxzem8qBea3R3RTmE3plHWYcCmXvvuGXU6my2zPIDEuQOHR41d9b5vAV/MMbZmoJFhrHoJa4HiNyLuu6kEAZ3t8wGcpVt/C7QSlOAUJbhzrnlGX8X3VuihOvCPg2PAkiD1cf+eESeI/+IKjPwdUHTKd7MaGnKWYRVNLv47l7n+r47ytE55214Ok19UkLsD69rsu6Tqv5zIhle8wQ0u04+S6Mm8/LlnaGRPNy2GFgJbNP06EfcPnmrBHQttuh7tF4qpAM41RqvRHC2ZwjrXokYlW9Y7unSp3in6Jx+652zSp5Ecn6sVIDhnCw77YyX0VfLYKAg2iAYSPzIdFvgzyYvsLBUNiYT1XTg0sOtJCLfUww1WfSfEmT26eQZ1HnCztfjqd6WrTugzRasSLALGGPyCgZRi4zNInBBuBD6DoKzEA0riP2X7YxO5yE2qB1bvIWv8dnPUtn/EkfJX71G2DmryyZgZcFXH02uRGt1WMwmgSKcadGLfV9RbcV5usiet8RM14w5KMUWzuW6tFVFeUwg=
+  file:
+    - book.epub
+    - book.mobi
+    - book.pdf
+  on:
+    repo: rdhyee/Anne-of-the-Island_51
+addons:
+  apt:
+    packages:
+    - xsltproc
+    - xvfb
+    - calibre
+    - python-pip
+    - git
+    - python-dev
+    - libjpeg-dev
+    - libpng-dev
+    - libfreetype6
+    - libfreetype6-dev
+    - zlib1g-dev
+    - python-lxml
+    - libxml2-dev
+    - libxslt1-dev
+    - tidy
